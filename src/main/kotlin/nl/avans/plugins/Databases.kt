@@ -19,7 +19,7 @@ fun Application.configureDatabases() {
             call.respond(HttpStatusCode.Created, id)
         }
         // Read car
-        get("/cars/{id}") {
+        get("/car/{id}") {
             val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
             try {
                 val car = carService.read(id)

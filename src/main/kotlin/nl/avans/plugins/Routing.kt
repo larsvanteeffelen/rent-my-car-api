@@ -17,4 +17,5 @@ fun Application.configureRouting() {
             call.respondText("Ik heb de eerste setup gemaakt voor de Ktor applicatie met postgres database")
         }
     }
+
 }
