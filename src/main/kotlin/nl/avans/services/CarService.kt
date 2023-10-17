@@ -1,4 +1,4 @@
-package nl.avans.plugins
+package nl.avans.services
 
 import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable
@@ -6,30 +6,37 @@ import java.sql.Connection
 import java.sql.Statement
 
 @Serializable
-data class Car(val name: String, val model: String, val type: String)
+data class Car(
+    val name: String,
+    val model: String,
+    val type: String,
+    val rentalprice: Double,
+    val latitude: Double,
+    val longitude: Double
+)
 class CarService(private val connection: Connection) {
     companion object {
         // This drops the table CAR. So delete this if database tables are ready
-        //private const val DROP_TABLE_CAR =
-            //"DROP TABLE CAR;"
+        private const val DROP_TABLE_CAR = "DROP TABLE CAR;"
         // This creates the tables.
-        private const val CREATE_TABLE_CAR =
-            "CREATE TABLE CAR (ID SERIAL PRIMARY KEY, NAME VARCHAR(255), MODEL VARCHAR(255), TYPE VARCHAR(255));"
-        private const val SELECT_CAR_BY_ID = "SELECT name, model, type FROM car WHERE id = ?"
-        private const val INSERT_CAR = "INSERT INTO car (name, model, type) VALUES (?, ?, ?)"
-        private const val UPDATE_CAR = "UPDATE car SET name = ?, model = ?, type = ? WHERE id = ?"
-        private const val DELETE_CAR = "DELETE FROM car WHERE id = ?"
+        private const val CREATE_TABLE_CAR = "CREATE TABLE CAR (ID SERIAL PRIMARY KEY, NAME VARCHAR(255), MODEL VARCHAR(255), TYPE VARCHAR(255), RENTALPRICE DOUBLE PRECISION, LATITUDE DOUBLE PRECISION, LONGITUDE DOUBLE PRECISION);"
+
+        private const val SELECT_CAR_BY_ID = "SELECT name, model, type, rentalprice, latitude, longitude FROM CAR WHERE id = ?"
+        private const val INSERT_CAR = "INSERT INTO CAR (name, model, type, rentalprice, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?)"
+        private const val UPDATE_CAR = "UPDATE CAR SET name = ?, model = ?, type = ?, rentalprice = ?, latitude = ?, longitude = ? WHERE id = ?"
+        private const val DELETE_CAR = "DELETE FROM CAR WHERE id = ?"
 
     }
 
     init {
-        //val statementDrop = connection.createStatement() //Delete this line if database tables are ready
-        //statementDrop.executeUpdate(DROP_TABLE_CAR) //Delete this line if database tables are ready
+        val statementDrop = connection.createStatement()
+        statementDrop.executeUpdate(DROP_TABLE_CAR)
+
         val statementCreate = connection.createStatement()
         statementCreate.executeUpdate(CREATE_TABLE_CAR)
     }
 
-    private var newCarId = 0
+
 
     // Create new car
     suspend fun create(car: Car): Int = withContext(Dispatchers.IO) {
@@ -37,6 +44,9 @@ class CarService(private val connection: Connection) {
         statement.setString(1, car.name)
         statement.setString(2, car.model)
         statement.setString(3, car.type)
+        statement.setDouble(4, car.rentalprice)
+        statement.setDouble(5, car.latitude)
+        statement.setDouble(6, car.longitude)
         statement.executeUpdate()
 
         val generatedKeys = statement.generatedKeys
@@ -57,7 +67,11 @@ class CarService(private val connection: Connection) {
             val name = resultSet.getString("name")
             val model = resultSet.getString("model")
             val type = resultSet.getString("type")
-            return@withContext Car(name, model, type)
+            val rentalprice = resultSet.getDouble("rentalprice")
+            val latitude = resultSet.getDouble("latitude")
+            val longitude = resultSet.getDouble("longitude")
+
+            return@withContext Car(name, model, type, rentalprice, latitude, longitude)
         } else {
             throw Exception("Record not found")
         }
@@ -69,7 +83,10 @@ class CarService(private val connection: Connection) {
         statement.setString(1, car.name)
         statement.setString(2, car.model)
         statement.setString(3, car.type)
-        statement.setInt(4, id)
+        statement.setDouble(4, car.rentalprice)
+        statement.setDouble(5, car.latitude)
+        statement.setDouble(6, car.longitude)
+        statement.setInt(7, id)
         statement.executeUpdate()
     }
 

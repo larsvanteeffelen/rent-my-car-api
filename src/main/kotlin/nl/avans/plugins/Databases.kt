@@ -8,42 +8,6 @@ import io.ktor.server.routing.*
 import java.sql.*
 import kotlinx.coroutines.*
 
-fun Application.configureDatabases() {
-    val dbConnection: Connection = connectToPostgres(embedded = true)
-    val carService = CarService(dbConnection)
-    routing {
-        // Create car
-        post("/car") {
-            val car = call.receive<Car>()
-            val id = carService.create(car)
-            call.respond(HttpStatusCode.Created, id)
-        }
-        // Read car
-        get("/car/{id}") {
-            val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
-            try {
-                val car = carService.read(id)
-                call.respond(HttpStatusCode.OK, car)
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.NotFound)
-            }
-        }
-        // Update car
-        put("/car/{id}") {
-            val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
-            val user = call.receive<Car>()
-            carService.update(id, user)
-            call.respond(HttpStatusCode.OK)
-        }
-        // Delete car
-        delete("/car/{id}") {
-            val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
-            carService.delete(id)
-            call.respond(HttpStatusCode.OK)
-        }
-    }
-}
-
 /**
  * Makes a connection to a Postgres database.
  *
@@ -68,7 +32,7 @@ fun Application.configureDatabases() {
 fun Application.connectToPostgres(embedded: Boolean): Connection {
     Class.forName("org.postgresql.Driver")
     if (embedded) {
-        return DriverManager.getConnection("jdbc:postgresql://localhost:5432/rent_my_car_db", "postgres", "12345")
+        return DriverManager.getConnection("jdbc:postgresql://localhost:5432/rent_my_car_db", "postgres", "root")
     } else {
         val url = environment.config.property("postgres.url").getString()
         val user = environment.config.property("postgres.user").getString()
