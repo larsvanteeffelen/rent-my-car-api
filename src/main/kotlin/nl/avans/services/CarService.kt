@@ -7,7 +7,7 @@ import java.sql.Statement
 
 @Serializable
 data class Car(
-    val name: String,
+    val make: String,
     val model: String,
     val type: String,
     val rentalprice: Double,
@@ -17,10 +17,10 @@ data class Car(
 class CarService(private val connection: Connection) {
 
     companion object {
-        private const val CREATE_TABLE_CAR = "CREATE TABLE IF NOT EXISTS car (ID SERIAL PRIMARY KEY, NAME VARCHAR(255), MODEL VARCHAR(255), TYPE VARCHAR(255), RENTALPRICE DOUBLE PRECISION, LATITUDE DOUBLE PRECISION, LONGITUDE DOUBLE PRECISION);"
-        private const val SELECT_CAR_BY_ID = "SELECT name, model, type, rentalprice, latitude, longitude FROM car WHERE id = ?"
-        private const val INSERT_CAR = "INSERT INTO car (name, model, type, rentalprice, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?)"
-        private const val UPDATE_CAR = "UPDATE car SET name = ?, model = ?, type = ?, rentalprice = ?, latitude = ?, longitude = ? WHERE id = ?"
+        private const val CREATE_TABLE_CAR = "CREATE TABLE IF NOT EXISTS car (ID SERIAL PRIMARY KEY, make VARCHAR(255), MODEL VARCHAR(255), TYPE VARCHAR(255), RENTALPRICE DOUBLE PRECISION, LATITUDE DOUBLE PRECISION, LONGITUDE DOUBLE PRECISION);"
+        private const val SELECT_CAR_BY_ID = "SELECT make, model, type, rentalprice, latitude, longitude FROM car WHERE id = ?"
+        private const val INSERT_CAR = "INSERT INTO car (make, model, type, rentalprice, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?)"
+        private const val UPDATE_CAR = "UPDATE car SET make = ?, model = ?, type = ?, rentalprice = ?, latitude = ?, longitude = ? WHERE id = ?"
         private const val DELETE_CAR = "DELETE FROM car WHERE id = ?"
     }
 
@@ -34,7 +34,7 @@ class CarService(private val connection: Connection) {
     // Create new car
     suspend fun create(car: Car): Int = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(INSERT_CAR, Statement.RETURN_GENERATED_KEYS)
-        statement.setString(1, car.name)
+        statement.setString(1, car.make)
         statement.setString(2, car.model)
         statement.setString(3, car.type)
         statement.setDouble(4, car.rentalprice)
@@ -58,14 +58,14 @@ class CarService(private val connection: Connection) {
         val resultSet = statement.executeQuery()
 
         if (resultSet.next()) {
-            val name = resultSet.getString("name")
+            val make = resultSet.getString("make")
             val model = resultSet.getString("model")
             val type = resultSet.getString("type")
             val rentalprice = resultSet.getDouble("rentalprice")
             val latitude = resultSet.getDouble("latitude")
             val longitude = resultSet.getDouble("longitude")
 
-            return@withContext Car(name, model, type, rentalprice, latitude, longitude)
+            return@withContext Car(make, model, type, rentalprice, latitude, longitude)
         } else {
             throw Exception("Record not found")
         }
@@ -74,7 +74,7 @@ class CarService(private val connection: Connection) {
     // Update a car
     suspend fun update(id: Int, car: Car) = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(UPDATE_CAR)
-        statement.setString(1, car.name)
+        statement.setString(1, car.make)
         statement.setString(2, car.model)
         statement.setString(3, car.type)
         statement.setDouble(4, car.rentalprice)
