@@ -1,4 +1,4 @@
-package nl.avans.routes.cars
+package nl.avans.routes.users
 
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -6,39 +6,39 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import nl.avans.services.Car
-import nl.avans.services.CarService
+import nl.avans.services.User
+import nl.avans.services.UserService
 
-fun Application.configureCarRouting(carService: CarService) {
+fun Application.configureUserRouting(userService: UserService) {
 
     routing {
-        // Create car
-        post("/car") {
-            val car = call.receive<Car>()
-            val id = carService.create(car)
+        // Create user
+        post("/user") {
+            val user = call.receive<User>()
+            val id = userService.create(user)
             call.respond(HttpStatusCode.Created, id)
         }
-        // Read car
-        get("/car/{id}") {
+        // Read user
+        get("/user/{id}") {
             val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
             try {
-                val car = carService.read(id)
-                call.respond(HttpStatusCode.OK, car)
+                val user = userService.read(id)
+                call.respond(HttpStatusCode.OK, user)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.NotFound)
             }
         }
-        // Update car
-        put("/car/{id}") {
+        // Update user
+        put("/user/{id}") {
             val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
-            val car = call.receive<Car>()
-            carService.update(id, car)
+            val user = call.receive<User>()
+            userService.update(id, user)
             call.respond(HttpStatusCode.OK)
         }
-        // Delete car
-        delete("/car/{id}") {
+        // Delete user
+        delete("/user/{id}") {
             val id = call.parameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
-            carService.delete(id)
+            userService.delete(id)
             call.respond(HttpStatusCode.OK)
         }
     }

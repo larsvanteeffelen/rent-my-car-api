@@ -15,23 +15,16 @@ data class Car(
     val longitude: Double
 )
 class CarService(private val connection: Connection) {
+
     companion object {
-        // This drops the table CAR. So delete this if database tables are ready
-        private const val DROP_TABLE_CAR = "DROP TABLE CAR;"
-        // This creates the tables.
-        private const val CREATE_TABLE_CAR = "CREATE TABLE CAR (ID SERIAL PRIMARY KEY, NAME VARCHAR(255), MODEL VARCHAR(255), TYPE VARCHAR(255), RENTALPRICE DOUBLE PRECISION, LATITUDE DOUBLE PRECISION, LONGITUDE DOUBLE PRECISION);"
-
-        private const val SELECT_CAR_BY_ID = "SELECT name, model, type, rentalprice, latitude, longitude FROM CAR WHERE id = ?"
-        private const val INSERT_CAR = "INSERT INTO CAR (name, model, type, rentalprice, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?)"
-        private const val UPDATE_CAR = "UPDATE CAR SET name = ?, model = ?, type = ?, rentalprice = ?, latitude = ?, longitude = ? WHERE id = ?"
-        private const val DELETE_CAR = "DELETE FROM CAR WHERE id = ?"
-
+        private const val CREATE_TABLE_CAR = "CREATE TABLE IF NOT EXISTS car (ID SERIAL PRIMARY KEY, NAME VARCHAR(255), MODEL VARCHAR(255), TYPE VARCHAR(255), RENTALPRICE DOUBLE PRECISION, LATITUDE DOUBLE PRECISION, LONGITUDE DOUBLE PRECISION);"
+        private const val SELECT_CAR_BY_ID = "SELECT name, model, type, rentalprice, latitude, longitude FROM car WHERE id = ?"
+        private const val INSERT_CAR = "INSERT INTO car (name, model, type, rentalprice, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?)"
+        private const val UPDATE_CAR = "UPDATE car SET name = ?, model = ?, type = ?, rentalprice = ?, latitude = ?, longitude = ? WHERE id = ?"
+        private const val DELETE_CAR = "DELETE FROM car WHERE id = ?"
     }
 
     init {
-        val statementDrop = connection.createStatement()
-        statementDrop.executeUpdate(DROP_TABLE_CAR)
-
         val statementCreate = connection.createStatement()
         statementCreate.executeUpdate(CREATE_TABLE_CAR)
     }
@@ -54,6 +47,7 @@ class CarService(private val connection: Connection) {
             return@withContext generatedKeys.getInt(1)
         } else {
             throw Exception("Unable to retrieve the id of the newly inserted car")
+
         }
     }
 
