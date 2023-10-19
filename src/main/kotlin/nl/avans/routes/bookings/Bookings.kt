@@ -1,4 +1,4 @@
-package nl.avans.routes.cars
+package nl.avans.routes.bookings
 
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -6,28 +6,29 @@ import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import nl.avans.dao.CarDAO
-import nl.avans.dto.Car
+import nl.avans.dao.BookingDAO
+import nl.avans.dto.Booking
 
-fun Application.configureCarRouting(carDAO: CarDAO) {
+fun Application.configureBookingRouting(bookingDAO: BookingDAO) {
 
     routing {
-        // Create car
-        post("/car") {
+        // Create booking
+        post("/booking") {
             try {
-                val car = call.receive<Car>()
-                val id = carDAO.create(car)
+                val booking = call.receive<Booking>()
+                val id = bookingDAO.create(booking)
                 call.respond(HttpStatusCode.Created, id)
             } catch (e: BadRequestException) {
-                call.respond(HttpStatusCode.BadRequest, "Car values are incorrect!")
+                call.respond(HttpStatusCode.BadRequest, "Booking values are incorrect!")
             }
         }
-        // Read car
-        get("/car/{id}") {
+
+        // Read booking
+        get("/booking/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id != null) {
                 try {
-                    val booking = carDAO.read(id)
+                    val booking = bookingDAO.read(id)
                     call.respond(HttpStatusCode.OK, booking)
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.NotFound)
@@ -36,13 +37,14 @@ fun Application.configureCarRouting(carDAO: CarDAO) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid ID")
             }
         }
-        // Update car
-        put("/car/{id}") {
+
+        // Update booking
+        put("/booking/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if(id != null) {
                 try {
-                    val car = call.receive<Car>()
-                    carDAO.update(id, car)
+                    val booking = call.receive<Booking>()
+                    bookingDAO.update(id, booking)
                     call.respond(HttpStatusCode.OK)
                 } catch (e: BadRequestException) {
                     call.respond(HttpStatusCode.BadRequest, "Bad request, check the values")
@@ -51,11 +53,12 @@ fun Application.configureCarRouting(carDAO: CarDAO) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid ID")
             }
         }
-        // Delete car
-        delete("/car/{id}") {
+
+        // Delete booking
+        delete("/booking/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id != null) {
-                carDAO.delete(id)
+                bookingDAO.delete(id)
                 call.respond(HttpStatusCode.OK)
             } else {
                 call.respond(HttpStatusCode.BadRequest, "Invalid ID")
