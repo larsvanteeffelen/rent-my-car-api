@@ -1,20 +1,12 @@
-package nl.avans.services
+package nl.avans.dao
 
 import kotlinx.coroutines.*
-import kotlinx.serialization.Serializable
+import nl.avans.dto.Car
 import java.sql.Connection
 import java.sql.Statement
 
-@Serializable
-data class Car(
-    val make: String,
-    val model: String,
-    val type: String,
-    val rentalprice: Double,
-    val latitude: Double,
-    val longitude: Double
-)
-class CarService(private val connection: Connection) {
+
+class CarDAO(private val connection: Connection) {
 
     companion object {
         private const val CREATE_TABLE_CAR = "CREATE TABLE IF NOT EXISTS car (ID SERIAL PRIMARY KEY, make VARCHAR(255), MODEL VARCHAR(255), TYPE VARCHAR(255), RENTALPRICE DOUBLE PRECISION, LATITUDE DOUBLE PRECISION, LONGITUDE DOUBLE PRECISION);"

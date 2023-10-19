@@ -1,22 +1,12 @@
-package nl.avans.services
+package nl.avans.dao
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.Serializable
+import nl.avans.dto.User
 import java.sql.Connection
 import java.sql.Statement
 
-@Serializable
-data class User(
-    val name: String,
-    val address: String,
-    val zipcode: String,
-    val city: String,
-    val email: String,
-    val drivingscore: Int
-)
-
-class UserService(private val connection: Connection) {
+class UserDAO(private val connection: Connection) {
     companion object {
         private const val CREATE_TABLE_USER = "CREATE TABLE IF NOT EXISTS \"user\" (ID SERIAL PRIMARY KEY, NAME VARCHAR(255), ADDRESS VARCHAR(255), ZIPCODE VARCHAR(20), CITY VARCHAR(255), EMAIL VARCHAR(255), DRIVINGSCORE INT);"
         private const val SELECT_USER_BY_ID = "SELECT name, address, zipcode, city, email, drivingscore FROM \"user\" WHERE id = ?"

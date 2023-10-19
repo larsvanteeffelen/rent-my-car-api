@@ -9,8 +9,8 @@ import io.ktor.server.response.*
 import nl.avans.plugins.*
 import nl.avans.routes.cars.configureCarRouting
 import nl.avans.routes.users.configureUserRouting
-import nl.avans.services.CarService
-import nl.avans.services.UserService
+import nl.avans.dao.CarDAO
+import nl.avans.dao.UserDAO
 import java.sql.Connection
 
 fun main() {
@@ -29,11 +29,11 @@ fun Application.module() {
     }
     val dbConnection: Connection = connectToPostgres(embedded = true)
 
-    val carService = CarService(dbConnection)
-    val userService = UserService(dbConnection)
+    val carDAO = CarDAO(dbConnection)
+    val userDAO = UserDAO(dbConnection)
 
     configureSecurity()
     configureSerialization()
-    configureCarRouting(carService)
-    configureUserRouting(userService)
+    configureCarRouting(carDAO)
+    configureUserRouting(userDAO)
 }
