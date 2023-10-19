@@ -6,11 +6,13 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
+import nl.avans.dao.BookingDAO
 import nl.avans.plugins.*
 import nl.avans.routes.cars.configureCarRouting
 import nl.avans.routes.users.configureUserRouting
 import nl.avans.dao.CarDAO
 import nl.avans.dao.UserDAO
+import nl.avans.routes.bookings.configureBookingRouting
 import java.sql.Connection
 
 fun main() {
@@ -27,13 +29,17 @@ fun Application.module() {
             call.respondText(text = "500: $cause", status = HttpStatusCode.InternalServerError)
         }
     }
+
     val dbConnection: Connection = connectToPostgres(embedded = true)
 
     val carDAO = CarDAO(dbConnection)
     val userDAO = UserDAO(dbConnection)
+    val bookingDAO = BookingDAO(dbConnection)
 
     configureSecurity()
     configureSerialization()
+
     configureCarRouting(carDAO)
     configureUserRouting(userDAO)
+    configureBookingRouting(bookingDAO)
 }

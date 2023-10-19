@@ -1,4 +1,4 @@
-package nl.avans.routes.users
+package nl.avans.routes.bookings
 
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -6,30 +6,30 @@ import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import nl.avans.dao.UserDAO
-import nl.avans.dto.User
+import nl.avans.dao.BookingDAO
+import nl.avans.dto.Booking
 
-fun Application.configureUserRouting(userDAO: UserDAO) {
+fun Application.configureBookingRouting(bookingDAO: BookingDAO) {
 
     routing {
-        // Create user
-        post("/user") {
+        // Create booking
+        post("/booking") {
             try {
-                val user = call.receive<User>()
-                val id = userDAO.create(user)
+                val booking = call.receive<Booking>()
+                val id = bookingDAO.create(booking)
                 call.respond(HttpStatusCode.Created, id)
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest, "User values are incorrect!")
+            } catch (e: BadRequestException) {
+                call.respond(HttpStatusCode.BadRequest, "Booking values are incorrect!")
             }
-
         }
-        // Read user
-        get("/user/{id}") {
+
+        // Read booking
+        get("/booking/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id != null) {
                 try {
-                    val user = userDAO.read(id)
-                    call.respond(HttpStatusCode.OK, user)
+                    val booking = bookingDAO.read(id)
+                    call.respond(HttpStatusCode.OK, booking)
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.NotFound)
                 }
@@ -37,13 +37,14 @@ fun Application.configureUserRouting(userDAO: UserDAO) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid ID")
             }
         }
-        // Update user
-        put("/user/{id}") {
+
+        // Update booking
+        put("/booking/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if(id != null) {
                 try {
-                    val user = call.receive<User>()
-                    userDAO.update(id, user)
+                    val booking = call.receive<Booking>()
+                    bookingDAO.update(id, booking)
                     call.respond(HttpStatusCode.OK)
                 } catch (e: BadRequestException) {
                     call.respond(HttpStatusCode.BadRequest, "Bad request, check the values")
@@ -52,11 +53,12 @@ fun Application.configureUserRouting(userDAO: UserDAO) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid ID")
             }
         }
-        // Delete user
-        delete("/user/{id}") {
+
+        // Delete booking
+        delete("/booking/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id != null) {
-                userDAO.delete(id)
+                bookingDAO.delete(id)
                 call.respond(HttpStatusCode.OK)
             } else {
                 call.respond(HttpStatusCode.BadRequest, "Invalid ID")
