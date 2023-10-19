@@ -27,8 +27,8 @@ fun Application.configureCarRouting(carDAO: CarDAO) {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id != null) {
                 try {
-                    val booking = carDAO.read(id)
-                    call.respond(HttpStatusCode.OK, booking)
+                    val car = carDAO.read(id)
+                    call.respond(HttpStatusCode.OK, car)
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.NotFound)
                 }

@@ -28,8 +28,8 @@ fun Application.configureUserRouting(userDAO: UserDAO) {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id != null) {
                 try {
-                    val booking = userDAO.read(id)
-                    call.respond(HttpStatusCode.OK, booking)
+                    val user = userDAO.read(id)
+                    call.respond(HttpStatusCode.OK, user)
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.NotFound)
                 }
