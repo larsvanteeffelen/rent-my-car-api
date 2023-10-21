@@ -9,7 +9,7 @@ import java.sql.Statement
 class UserDAO(private val connection: Connection) {
     companion object {
         private const val CREATE_TABLE_USER = "CREATE TABLE IF NOT EXISTS \"user\" (ID SERIAL PRIMARY KEY, NAME VARCHAR(255), ADDRESS VARCHAR(255), ZIPCODE VARCHAR(20), CITY VARCHAR(255), EMAIL VARCHAR(255), DRIVINGSCORE INT);"
-        private const val SELECT_USER_BY_ID = "SELECT name, address, zipcode, city, email, drivingscore FROM \"user\" WHERE id = ?"
+        private const val SELECT_USER_BY_ID = "SELECT id, name, address, zipcode, city, email, drivingscore FROM \"user\" WHERE id = ?"
         private const val INSERT_USER = "INSERT INTO \"user\" (name, address, zipcode, city, email, drivingscore) VALUES (?, ?, ?, ?, ?, ?)"
         private const val UPDATE_USER = "UPDATE \"user\" SET name = ?, address = ?, zipcode = ?, city = ?, email = ?, drivingscore = ? WHERE id = ?"
         private const val DELETE_USER = "DELETE FROM \"user\" WHERE id = ?"
@@ -52,7 +52,7 @@ class UserDAO(private val connection: Connection) {
             val email = resultSet.getString("email")
             val drivingscore = resultSet.getInt("drivingscore")
 
-            return@withContext User(name, address, zipcode, city, email, drivingscore)
+            return@withContext User(id, name, address, zipcode, city, email, drivingscore)
         } else {
             throw Exception("Record not found")
         }

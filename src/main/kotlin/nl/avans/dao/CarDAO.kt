@@ -10,6 +10,7 @@ class CarDAO(private val connection: Connection) {
 
     companion object {
         private const val CREATE_TABLE_CAR = "CREATE TABLE IF NOT EXISTS car (ID SERIAL PRIMARY KEY, make VARCHAR(255), MODEL VARCHAR(255), TYPE VARCHAR(255), RENTALPRICE DOUBLE PRECISION, LATITUDE DOUBLE PRECISION, LONGITUDE DOUBLE PRECISION);"
+        private const val SELECT_ALL_CARS = "SELECT id, make, model, type, rentalprice, latitude, longitude FROM car"
         private const val SELECT_CAR_BY_ID = "SELECT make, model, type, rentalprice, latitude, longitude FROM car WHERE id = ?"
         private const val INSERT_CAR = "INSERT INTO car (make, model, type, rentalprice, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?)"
         private const val UPDATE_CAR = "UPDATE car SET make = ?, model = ?, type = ?, rentalprice = ?, latitude = ?, longitude = ? WHERE id = ?"
@@ -20,8 +21,6 @@ class CarDAO(private val connection: Connection) {
         val statementCreate = connection.createStatement()
         statementCreate.executeUpdate(CREATE_TABLE_CAR)
     }
-
-
 
     // Create new car
     suspend fun create(car: Car): Int = withContext(Dispatchers.IO) {
@@ -43,6 +42,33 @@ class CarDAO(private val connection: Connection) {
         }
     }
 
+    suspend fun readAll(): List<Car> = withContext(Dispatchers.IO) {
+        val cars = mutableListOf<Car>()
+
+        val statement = connection.prepareStatement(SELECT_ALL_CARS)
+        val resultSet = statement.executeQuery()
+
+        while (resultSet.next()) {
+            val id = resultSet.getInt("id")
+            val make = resultSet.getString("make")
+            val model = resultSet.getString("model")
+            val type = resultSet.getString("type")
+            val rentalprice = resultSet.getDouble("rentalprice")
+            val latitude = resultSet.getDouble("latitude")
+            val longitude = resultSet.getDouble("longitude")
+
+            val car = Car(id, make, model, type, rentalprice, latitude, longitude)
+            cars.add(car)
+        }
+
+        if (cars.isNotEmpty()) {
+            return@withContext cars
+        } else {
+            throw Exception("No cars found")
+        }
+    }
+
+
     // Read a car
     suspend fun read(id: Int): Car = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(SELECT_CAR_BY_ID)
@@ -57,7 +83,7 @@ class CarDAO(private val connection: Connection) {
             val latitude = resultSet.getDouble("latitude")
             val longitude = resultSet.getDouble("longitude")
 
-            return@withContext Car(make, model, type, rentalprice, latitude, longitude)
+            return@withContext Car(id, make, model, type, rentalprice, latitude, longitude)
         } else {
             throw Exception("Record not found")
         }
