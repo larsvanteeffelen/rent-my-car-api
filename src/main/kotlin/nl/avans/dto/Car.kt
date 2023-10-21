@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Car(
-    val id: Int,
+    val id: Int? = null,
     val make: String,
     val model: String,
     val type: String,

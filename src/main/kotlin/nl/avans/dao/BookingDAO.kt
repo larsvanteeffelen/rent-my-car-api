@@ -10,7 +10,7 @@ class BookingDAO(private val connection: Connection) {
 
     companion object {
         private const val CREATE_TABLE_BOOKING = "CREATE TABLE IF NOT EXISTS booking (ID SERIAL PRIMARY KEY, CarId INT, UserId INT, StartTime TIMESTAMP, EndTime TIMESTAMP);"
-        private const val SELECT_BOOKING_BY_ID = "SELECT CarId, UserId, StartTime, EndTime FROM booking WHERE id = ?"
+        private const val SELECT_BOOKING_BY_ID = "SELECT id, CarId, UserId, StartTime, EndTime FROM booking WHERE id = ?"
         private const val INSERT_BOOKING = "INSERT INTO booking (CarId, UserId, StartTime, EndTime) VALUES (?, ?, ?, ?)"
         private const val UPDATE_BOOKING = "UPDATE booking SET CarId = ?, UserId = ?, StartTime = ?, EndTime = ? WHERE id = ?"
         private const val DELETE_BOOKING = "DELETE FROM booking WHERE id = ?"
