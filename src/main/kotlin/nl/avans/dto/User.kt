@@ -10,5 +10,5 @@ data class User(
     val zipcode: String,
     val city: String,
     val email: String,
-    val drivingscore: Int
+    val drivingScore: Int
 )

@@ -8,7 +8,7 @@ data class Car(
     val make: String,
     val model: String,
     val type: String,
-    val rentalprice: Double,
+    val rentalPrice: Double,
     val latitude: Double,
     val longitude: Double
 )

@@ -28,7 +28,7 @@ class UserDAO(private val connection: Connection) {
         statement.setString(3, user.zipcode)
         statement.setString(4, user.city)
         statement.setString(5, user.email)
-        statement.setInt(6, user.drivingscore)
+        statement.setInt(6, user.drivingScore)
         statement.executeUpdate()
 
         val generatedKeys = statement.generatedKeys
@@ -65,7 +65,7 @@ class UserDAO(private val connection: Connection) {
         statement.setString(3, user.zipcode)
         statement.setString(4, user.city)
         statement.setString(5, user.email)
-        statement.setInt(6, user.drivingscore)
+        statement.setInt(6, user.drivingScore)
         statement.setInt(7, id)
         statement.executeUpdate()
     }
