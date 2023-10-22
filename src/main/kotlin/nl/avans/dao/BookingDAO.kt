@@ -5,6 +5,8 @@ import kotlinx.coroutines.withContext
 import nl.avans.dto.Booking
 import java.sql.Connection
 import java.sql.Statement
+import java.sql.Timestamp
+import java.text.SimpleDateFormat
 
 class BookingDAO(private val connection: Connection) {
 
@@ -26,8 +28,8 @@ class BookingDAO(private val connection: Connection) {
         val statement = connection.prepareStatement(INSERT_BOOKING, Statement.RETURN_GENERATED_KEYS)
         statement.setInt(1, booking.carId)
         statement.setInt(2, booking.userId)
-        statement.setString(3, booking.startTime)
-        statement.setString(4, booking.endTime)
+        statement.setTimestamp(3, convertDateToTimestamp(booking.startTime))
+        statement.setTimestamp(4, convertDateToTimestamp(booking.endTime))
         statement.executeUpdate()
 
         val generatedKeys = statement.generatedKeys
@@ -61,8 +63,8 @@ class BookingDAO(private val connection: Connection) {
         val statement = connection.prepareStatement(UPDATE_BOOKING)
         statement.setInt(1, booking.carId)
         statement.setInt(2, booking.userId)
-        statement.setString(3, booking.startTime)
-        statement.setString(4, booking.endTime)
+        statement.setTimestamp(3, convertDateToTimestamp(booking.startTime))
+        statement.setTimestamp(4, convertDateToTimestamp(booking.endTime))
         statement.setInt(5, id)
         statement.executeUpdate()
     }
@@ -72,5 +74,12 @@ class BookingDAO(private val connection: Connection) {
         val statement = connection.prepareStatement(DELETE_BOOKING)
         statement.setInt(1, id)
         statement.executeUpdate()
+    }
+
+    fun convertDateToTimestamp(date: String): Timestamp {
+        val formatter = SimpleDateFormat("yyyy-mm-dd hh:mm:ss")
+        val date = formatter.parse(date)
+        val timeStampDate = Timestamp(date.getTime())
+        return timeStampDate
     }
 }
