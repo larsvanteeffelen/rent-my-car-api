@@ -9,7 +9,7 @@ import io.ktor.http.cio.*
 import io.ktor.server.response.*
 import io.ktor.server.testing.*
 import io.ktor.server.util.*
-import nl.avans.dao.CarDAO
+import nl.avans.dao.CarDAO 
 import nl.avans.dao.UserDAO
 import nl.avans.dto.User
 import kotlin.test.*
@@ -54,7 +54,6 @@ class ApplicationTest {
                 // Verify the response content (user ID)
                 // If the user table is empty then will pass this test with every run there is one user added by the registration test.
                 val id = response.content
-
                 // Check that retrieving the user returns status code 200 OK
                 handleRequest(HttpMethod.Get, "/user/$id"){
                     addHeader("Content-Type", ContentType.Application.Json.toString())
@@ -162,9 +161,6 @@ class ApplicationTest {
     fun cancelBooking() {
 
     }
-
-
-
 
 // Connecton with the database postgresSQL in DOcker environment.
     private fun connectToPostgres(embedded: Boolean): Connection? {
