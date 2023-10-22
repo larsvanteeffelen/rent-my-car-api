@@ -23,6 +23,15 @@ fun Application.configureCarRouting(carDAO: CarDAO) {
             }
         }
         // Read car
+        get("/car/all") {
+            try {
+                val cars = carDAO.readAll()
+                call.respond(HttpStatusCode.OK, cars)
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.NotFound)
+            }
+        }
+        // Read car
         get("/car/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
             if (id != null) {

@@ -1,11 +1,13 @@
 package nl.avans.dto
 
+import kotlinx.serialization.Serializable
 import java.sql.Timestamp
 
+@Serializable
 data class Booking(
-    val id: Int,
+    val id: Int? = null,
     val carId: Int,
     val userId: Int,
-    val startTime: Timestamp,
-    val endTime: Timestamp
+    val startTime: String,
+    val endTime: String
 )
