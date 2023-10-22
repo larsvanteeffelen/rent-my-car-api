@@ -1,7 +1,6 @@
 package nl.avans.dto
 
 import kotlinx.serialization.Serializable
-import java.sql.Timestamp
 
 @Serializable
 data class Booking(

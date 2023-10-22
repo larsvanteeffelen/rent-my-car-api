@@ -31,13 +31,13 @@ import kotlinx.coroutines.*
  * */
 fun Application.connectToPostgres(embedded: Boolean): Connection {
     Class.forName("org.postgresql.Driver")
-    if (embedded) {
-        return DriverManager.getConnection("jdbc:postgresql://localhost:5432/rent_my_car_db", "postgres", "root")
+    return if (embedded) {
+        DriverManager.getConnection("jdbc:postgresql://localhost:5432/rent_my_car_db", "postgres", "root")
     } else {
         val url = environment.config.property("postgres.url").getString()
         val user = environment.config.property("postgres.user").getString()
         val password = environment.config.property("postgres.password").getString()
 
-        return DriverManager.getConnection(url, user, password)
+        DriverManager.getConnection(url, user, password)
     }
 }
