@@ -20,6 +20,12 @@ fun Application.configureBookingRouting(bookingDAO: BookingDAO) {
                 call.respond(HttpStatusCode.Created, id)
             } catch (e: BadRequestException) {
                 call.respond(HttpStatusCode.BadRequest, "Booking values are incorrect!")
+            } catch (e: Exception) {
+                if(e.message?.contains("Car is already booked in this timeframe") == true){
+                    call.respond(HttpStatusCode.Conflict, "Car is already booked in this timeframe!")
+                } else {
+                    call.respond(HttpStatusCode.BadRequest, "Booking values are incorrect!")
+                }
             }
         }
 
