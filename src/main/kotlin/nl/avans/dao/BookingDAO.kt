@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat
 class BookingDAO(private val connection: Connection) {
 
     companion object {
-        private const val CREATE_TABLE_BOOKING = "CREATE TABLE IF NOT EXISTS booking (ID SERIAL PRIMARY KEY, carId INT, userId INT, startTime VARCHAR(255), endTime VARCHAR(255));"
+        private const val CREATE_TABLE_BOOKING = "CREATE TABLE IF NOT EXISTS booking (ID SERIAL PRIMARY KEY, carId INT, userId INT, startTime TIMESTAMP WITH TIME ZONE, endTime TIMESTAMP WITH TIME ZONE);"
         private const val SELECT_BOOKING_BY_ID = "SELECT id, carId, userId, startTime, endTime FROM booking WHERE id = ?"
         private const val SELECT_BOOKING_BY_TIMEFRAME = "SELECT id, carId, userId, startTime, endTime FROM booking WHERE carid = ? AND (? BETWEEN startTime AND endTime  OR ? BETWEEN  startTime AND endTime)"
         private const val INSERT_BOOKING = "INSERT INTO booking (carId, userId, startTime, endTime) VALUES (?, ?, ?, ?)"
