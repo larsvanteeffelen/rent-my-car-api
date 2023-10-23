@@ -77,7 +77,7 @@ class BookingDAO(private val connection: Connection) {
     }
 
     fun convertDateToTimestamp(date: String): Timestamp {
-        val formatter = SimpleDateFormat("yyyy-mm-dd hh:mm:ss")
+        val formatter = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
         val date = formatter.parse(date)
         val timeStampDate = Timestamp(date.getTime())
         return timeStampDate
