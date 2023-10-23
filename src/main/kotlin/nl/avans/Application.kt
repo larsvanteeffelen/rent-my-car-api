@@ -11,8 +11,10 @@ import nl.avans.plugins.*
 import nl.avans.routes.cars.configureCarRouting
 import nl.avans.routes.users.configureUserRouting
 import nl.avans.dao.CarDAO
+import nl.avans.dao.CarPictureDAO
 import nl.avans.dao.UserDAO
 import nl.avans.routes.bookings.configureBookingRouting
+import nl.avans.routes.carpictures.configureCarPictureRouting
 import java.sql.Connection
 
 fun main() {
@@ -35,11 +37,13 @@ fun Application.module() {
     val carDAO = CarDAO(dbConnection)
     val userDAO = UserDAO(dbConnection)
     val bookingDAO = BookingDAO(dbConnection)
+    val carPictureDAO = CarPictureDAO(dbConnection)
 
     configureSecurity()
     configureSerialization()
-908
+
     configureCarRouting(carDAO)
     configureUserRouting(userDAO)
     configureBookingRouting(bookingDAO)
+    configureCarPictureRouting(carPictureDAO)
 }
