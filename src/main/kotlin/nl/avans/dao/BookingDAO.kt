@@ -13,6 +13,7 @@ class BookingDAO(private val connection: Connection) {
     companion object {
         private const val CREATE_TABLE_BOOKING = "CREATE TABLE IF NOT EXISTS booking (ID SERIAL PRIMARY KEY, carId INT, userId INT, startTime VARCHAR(255), endTime VARCHAR(255));"
         private const val SELECT_BOOKING_BY_ID = "SELECT id, carId, userId, startTime, endTime FROM booking WHERE id = ?"
+        private const val SELECT_BOOKING_BY_TIMEFRAME = "SELECT id, carId, userId, startTime, endTime FROM booking WHERE carid = ? AND (? BETWEEN startTime AND endTime  OR ? BETWEEN  startTime AND endTime)"
         private const val INSERT_BOOKING = "INSERT INTO booking (carId, userId, startTime, endTime) VALUES (?, ?, ?, ?)"
         private const val UPDATE_BOOKING = "UPDATE booking SET carId = ?, userId = ?, startTime = ?, endTime = ? WHERE id = ?"
         private const val DELETE_BOOKING = "DELETE FROM booking WHERE id = ?"
@@ -25,6 +26,15 @@ class BookingDAO(private val connection: Connection) {
 
     // Create new booking
     suspend fun create(booking: Booking): Int = withContext(Dispatchers.IO) {
+        val checkStatement = connection.prepareStatement(SELECT_BOOKING_BY_TIMEFRAME)
+        checkStatement.setInt(1, booking.carId)
+        checkStatement.setTimestamp(2, convertDateToTimestamp(booking.startTime))
+        checkStatement.setTimestamp(3, convertDateToTimestamp(booking.endTime))
+        val checkResultSet = checkStatement.executeQuery()
+        if(checkResultSet.next()) {
+            throw Exception("Car is already booked in this timeframe")
+        }
+
         val statement = connection.prepareStatement(INSERT_BOOKING, Statement.RETURN_GENERATED_KEYS)
         statement.setInt(1, booking.carId)
         statement.setInt(2, booking.userId)
