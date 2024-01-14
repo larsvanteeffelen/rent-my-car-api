@@ -16,6 +16,7 @@ class CarDAO(private val connection: Connection) {
         private const val INSERT_CAR = "INSERT INTO car (make, model, type, rentalprice, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?)"
         private const val UPDATE_CAR = "UPDATE car SET make = ?, model = ?, type = ?, rentalprice = ?, latitude = ?, longitude = ? WHERE id = ?"
         private const val DELETE_CAR = "DELETE FROM car WHERE id = ?"
+        private const val SELECT_AVAILABLE_CARS_IN_RANGE = "SELECT * FROM car WHERE 6371 * ACOS(SIN(RADIANS(?)) * SIN(RADIANS(latitude)) + COS(RADIANS(?)) * COS(RADIANS(latitude)) * COS(RADIANS(? - longitude))) * 1000 <= ?;"
     }
 
     init {
@@ -71,6 +72,37 @@ class CarDAO(private val connection: Connection) {
     suspend fun readAvailable(): List<Car> = withContext(Dispatchers.IO) {
         val cars = mutableListOf<Car>()
         val statement = connection.prepareStatement(SELECT_AVAILABLE_CARS)
+
+        val resultSet = statement.executeQuery()
+
+        while (resultSet.next()) {
+            val id = resultSet.getInt("id")
+            val make = resultSet.getString("make")
+            val model = resultSet.getString("model")
+            val type = resultSet.getString("type")
+            val rentalprice = resultSet.getDouble("rentalprice")
+            val latitude = resultSet.getDouble("latitude")
+            val longitude = resultSet.getDouble("longitude")
+
+            val car = Car(id, make, model, type, rentalprice, latitude, longitude)
+            cars.add(car)
+        }
+
+        if (cars.isNotEmpty()) {
+            return@withContext cars
+        } else {
+            throw Exception("No cars found")
+        }
+    }
+
+    suspend fun readAvailableCarsInRange(lat: Double, long: Double, km: Int): List<Car> = withContext(Dispatchers.IO) {
+        val cars = mutableListOf<Car>()
+        val statement = connection.prepareStatement(SELECT_AVAILABLE_CARS_IN_RANGE)
+        statement.setDouble(1, lat)
+        statement.setDouble(2, lat)
+        statement.setDouble(3, long)
+        statement.setInt(4, km * 1000)
+
 
         val resultSet = statement.executeQuery()
 

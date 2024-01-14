@@ -34,6 +34,14 @@ fun Application.configureCarRouting(carDAO: CarDAO) {
         // Read Currently Available Cars
         get("/car/available") {
             try {
+                var long = call.parameters["longitude"]?.toDoubleOrNull()
+                var lat = call.parameters["latitude"]?.toDoubleOrNull()
+                var km = call.parameters["km"]?.toIntOrNull()
+
+                if(long != null && lat != null && km != null) {
+                    val carsInRange = carDAO.readAvailableCarsInRange(lat, long, km);
+                    call.respond(HttpStatusCode.OK, carsInRange)
+                }
                 val cars = carDAO.readAvailable()
                 call.respond(HttpStatusCode.OK, cars)
             } catch (e: Exception) {
