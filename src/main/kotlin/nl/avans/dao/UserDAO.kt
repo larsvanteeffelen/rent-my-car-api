@@ -10,6 +10,7 @@ class UserDAO(private val connection: Connection) {
     companion object {
         private const val CREATE_TABLE_USER = "CREATE TABLE IF NOT EXISTS \"user\" (ID SERIAL PRIMARY KEY, NAME VARCHAR(255), ADDRESS VARCHAR(255), ZIPCODE VARCHAR(20), CITY VARCHAR(255), EMAIL VARCHAR(255), DRIVINGSCORE INT, AUTHID VARCHAR(255));"
         private const val SELECT_USER_BY_ID = "SELECT * FROM \"user\" WHERE id = ?"
+        private const val SELECT_USER_BY_AUTHID = "SELECT * FROM \"user\" WHERE authid = ?"
         private const val INSERT_USER = "INSERT INTO \"user\" (name, address, zipcode, city, email, drivingscore, authid) VALUES (?, ?, ?, ?, ?, ?, ?)"
         private const val UPDATE_USER = "UPDATE \"user\" SET name = ?, address = ?, zipcode = ?, city = ?, email = ?, drivingscore = ? WHERE id = ?"
         private const val DELETE_USER = "DELETE FROM \"user\" WHERE id = ?"
@@ -46,6 +47,27 @@ class UserDAO(private val connection: Connection) {
         val resultSet = statement.executeQuery()
 
         if (resultSet.next()) {
+            val name = resultSet.getString("name")
+            val address = resultSet.getString("address")
+            val zipcode = resultSet.getString("zipcode")
+            val city = resultSet.getString("city")
+            val email = resultSet.getString("email")
+            val drivingscore = resultSet.getInt("drivingscore")
+            val authid = resultSet.getString("authid")
+
+            return@withContext User(id, name, address, zipcode, city, email, drivingscore, authid)
+        } else {
+            throw Exception("Record not found")
+        }
+    }
+
+    suspend fun readUserFromAuthId(authId: String): User = withContext(Dispatchers.IO) {
+        val statement = connection.prepareStatement(SELECT_USER_BY_AUTHID)
+        statement.setString(1, authId)
+        val resultSet = statement.executeQuery()
+
+        if (resultSet.next()) {
+            val id = resultSet.getInt("id")
             val name = resultSet.getString("name")
             val address = resultSet.getString("address")
             val zipcode = resultSet.getString("zipcode")

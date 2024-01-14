@@ -12,4 +12,4 @@ data class User(
     val email: String,
     val drivingScore: Int,
     val authId: String
-    )
+)

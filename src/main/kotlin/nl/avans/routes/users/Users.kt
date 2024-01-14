@@ -37,6 +37,20 @@ fun Application.configureUserRouting(userDAO: UserDAO) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid ID")
             }
         }
+
+        get("/user") {
+            val authId = call.parameters["authId"].toString()
+            if (authId != null) {
+                try {
+                    val user = userDAO.readUserFromAuthId(authId)
+                    call.respond(HttpStatusCode.OK, user)
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.NotFound)
+                }
+            } else {
+                call.respond(HttpStatusCode.BadRequest, "Invalid AuthID")
+            }
+        }
         // Update user
         put("/user/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
