@@ -10,5 +10,6 @@ data class User(
     val zipcode: String,
     val city: String,
     val email: String,
-    val drivingScore: Int
-)
+    val drivingScore: Int,
+    val authId: String
+    )
