@@ -156,12 +156,13 @@ class CarDAO(private val connection: Connection) {
     }
 
     // Read a car by ower id
-    suspend fun readByOwner(ownerId: Int): Car = withContext(Dispatchers.IO) {
+    suspend fun readByOwner(ownerId: Int):  List<Car> = withContext(Dispatchers.IO) {
+        val cars = mutableListOf<Car>()
         val statement = connection.prepareStatement(SELECT_ALL_CARS_BY_OWNER)
         statement.setInt(1, ownerId)
         val resultSet = statement.executeQuery()
 
-        if (resultSet.next()) {
+        while (resultSet.next()) {
             val id = resultSet.getInt("id")
             val make = resultSet.getString("make")
             val model = resultSet.getString("model")
@@ -170,9 +171,12 @@ class CarDAO(private val connection: Connection) {
             val latitude = resultSet.getDouble("latitude")
             val longitude = resultSet.getDouble("longitude")
 
-            return@withContext Car(id, ownerId, make, model, type, rentalprice, latitude, longitude)
-        } else {
-            throw Exception("Record not found")
+            cars.add(Car(id, ownerId, make, model, type, rentalprice, latitude, longitude))
+        }
+        if (cars.isNotEmpty()){
+            return@withContext cars
+        } else{
+            throw Exception("No cars found")
         }
     }
 
