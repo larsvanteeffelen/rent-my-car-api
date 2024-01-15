@@ -25,6 +25,11 @@ fun Application.configureCarRouting(carDAO: CarDAO) {
         // Read car
         get("/car/all") {
             try {
+                var ownerId = call.parameters["ownerId"]?.toIntOrNull()
+                if(ownerId != null){
+                    val cars = carDAO.readByOwner(ownerId)
+                    call.respond(HttpStatusCode.OK, cars)
+                }
                 val cars = carDAO.readAll()
                 call.respond(HttpStatusCode.OK, cars)
             } catch (e: Exception) {

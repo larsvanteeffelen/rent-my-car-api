@@ -155,6 +155,27 @@ class CarDAO(private val connection: Connection) {
         }
     }
 
+    // Read a car by ower id
+    suspend fun readByOwner(ownerId: Int): Car = withContext(Dispatchers.IO) {
+        val statement = connection.prepareStatement(SELECT_ALL_CARS_BY_OWNER)
+        statement.setInt(1, ownerId)
+        val resultSet = statement.executeQuery()
+
+        if (resultSet.next()) {
+            val id = resultSet.getInt("id")
+            val make = resultSet.getString("make")
+            val model = resultSet.getString("model")
+            val type = resultSet.getString("type")
+            val rentalprice = resultSet.getDouble("rentalprice")
+            val latitude = resultSet.getDouble("latitude")
+            val longitude = resultSet.getDouble("longitude")
+
+            return@withContext Car(id, ownerId, make, model, type, rentalprice, latitude, longitude)
+        } else {
+            throw Exception("Record not found")
+        }
+    }
+
     // Update a car
     suspend fun update(id: Int, car: Car) = withContext(Dispatchers.IO) {
         val statement = connection.prepareStatement(UPDATE_CAR)
