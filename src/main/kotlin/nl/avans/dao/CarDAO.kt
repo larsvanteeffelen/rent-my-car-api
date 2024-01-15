@@ -9,14 +9,16 @@ import java.sql.Statement
 class CarDAO(private val connection: Connection) {
 
     companion object {
-        private const val CREATE_TABLE_CAR = "CREATE TABLE IF NOT EXISTS car (ID SERIAL PRIMARY KEY, make VARCHAR(255), MODEL VARCHAR(255), TYPE VARCHAR(255), RENTALPRICE DOUBLE PRECISION, LATITUDE DOUBLE PRECISION, LONGITUDE DOUBLE PRECISION);"
+        private const val CREATE_TABLE_CAR = "CREATE TABLE IF NOT EXISTS car (ID SERIAL PRIMARY KEY, make VARCHAR(255), MODEL VARCHAR(255), TYPE VARCHAR(255), RENTALPRICE DOUBLE PRECISION, OWNERID INT, LATITUDE DOUBLE PRECISION, LONGITUDE DOUBLE PRECISION);"
         private const val SELECT_ALL_CARS = "SELECT id, make, model, type, rentalprice, latitude, longitude FROM car"
         private const val SELECT_AVAILABLE_CARS = "SELECT id, make, model, type, rentalprice, latitude, longitude FROM car WHERE id NOT IN (SELECT carid FROM booking WHERE current_timestamp BETWEEN startTime AND endTime)"
         private const val SELECT_CAR_BY_ID = "SELECT make, model, type, rentalprice, latitude, longitude FROM car WHERE id = ?"
-        private const val INSERT_CAR = "INSERT INTO car (make, model, type, rentalprice, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?)"
+        private const val INSERT_CAR = "INSERT INTO car (make, model, type, rentalprice, latitude, longitude, ownerid) VALUES (?, ?, ?, ?, ?, ?, ?)"
         private const val UPDATE_CAR = "UPDATE car SET make = ?, model = ?, type = ?, rentalprice = ?, latitude = ?, longitude = ? WHERE id = ?"
         private const val DELETE_CAR = "DELETE FROM car WHERE id = ?"
         private const val SELECT_AVAILABLE_CARS_IN_RANGE = "SELECT * FROM car WHERE 6371 * ACOS(SIN(RADIANS(?)) * SIN(RADIANS(latitude)) + COS(RADIANS(?)) * COS(RADIANS(latitude)) * COS(RADIANS(? - longitude))) * 1000 <= ?;"
+        private const val SELECT_ALL_CARS_BY_OWNER = "SELECT * FROM car where ownerId = ?"
+
     }
 
     init {
@@ -33,6 +35,8 @@ class CarDAO(private val connection: Connection) {
         statement.setDouble(4, car.rentalPrice)
         statement.setDouble(5, car.latitude)
         statement.setDouble(6, car.longitude)
+        statement.setInt(7, car.ownerId)
+
         statement.executeUpdate()
 
         val generatedKeys = statement.generatedKeys
@@ -52,6 +56,7 @@ class CarDAO(private val connection: Connection) {
 
         while (resultSet.next()) {
             val id = resultSet.getInt("id")
+            val ownerId = resultSet.getInt("ownerid")
             val make = resultSet.getString("make")
             val model = resultSet.getString("model")
             val type = resultSet.getString("type")
@@ -59,7 +64,7 @@ class CarDAO(private val connection: Connection) {
             val latitude = resultSet.getDouble("latitude")
             val longitude = resultSet.getDouble("longitude")
 
-            val car = Car(id, make, model, type, rentalprice, latitude, longitude)
+            val car = Car(id, ownerId, make, model, type, rentalprice, latitude, longitude)
             cars.add(car)
         }
 
@@ -77,6 +82,7 @@ class CarDAO(private val connection: Connection) {
 
         while (resultSet.next()) {
             val id = resultSet.getInt("id")
+            val ownerId = resultSet.getInt("ownerid")
             val make = resultSet.getString("make")
             val model = resultSet.getString("model")
             val type = resultSet.getString("type")
@@ -84,7 +90,7 @@ class CarDAO(private val connection: Connection) {
             val latitude = resultSet.getDouble("latitude")
             val longitude = resultSet.getDouble("longitude")
 
-            val car = Car(id, make, model, type, rentalprice, latitude, longitude)
+            val car = Car(id, ownerId, make, model, type, rentalprice, latitude, longitude)
             cars.add(car)
         }
 
@@ -108,6 +114,7 @@ class CarDAO(private val connection: Connection) {
 
         while (resultSet.next()) {
             val id = resultSet.getInt("id")
+            val ownerId = resultSet.getInt("ownerid")
             val make = resultSet.getString("make")
             val model = resultSet.getString("model")
             val type = resultSet.getString("type")
@@ -115,7 +122,7 @@ class CarDAO(private val connection: Connection) {
             val latitude = resultSet.getDouble("latitude")
             val longitude = resultSet.getDouble("longitude")
 
-            val car = Car(id, make, model, type, rentalprice, latitude, longitude)
+            val car = Car(id, ownerId, make, model, type, rentalprice, latitude, longitude)
             cars.add(car)
         }
 
@@ -134,6 +141,7 @@ class CarDAO(private val connection: Connection) {
         val resultSet = statement.executeQuery()
 
         if (resultSet.next()) {
+            val ownerId = resultSet.getInt("ownerId")
             val make = resultSet.getString("make")
             val model = resultSet.getString("model")
             val type = resultSet.getString("type")
@@ -141,7 +149,7 @@ class CarDAO(private val connection: Connection) {
             val latitude = resultSet.getDouble("latitude")
             val longitude = resultSet.getDouble("longitude")
 
-            return@withContext Car(id, make, model, type, rentalprice, latitude, longitude)
+            return@withContext Car(id, ownerId, make, model, type, rentalprice, latitude, longitude)
         } else {
             throw Exception("Record not found")
         }
